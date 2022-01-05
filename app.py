@@ -39,12 +39,19 @@ class Health(Resource):
 
 class send_data_to_kafka(Resource):
     def get(self):
-        kafka_topic = 'tweets'
-        if type(kafka_topic) == bytes:
-            kafka_topic = kafka_topic.decode('utf-8')
-
-        data = {'latest_tweet': 'dummy'}        
-        producer.send(kafka_topic, value=data)
+        data = {
+            'id': 'jyew',
+            # 'tweet': status.text,
+            # 'source': status.source,
+            # 'retweeted': status.retweeted,
+            # 'retweet_count': status.retweet_count,
+            # 'created_at': str(status.created_at),
+            'username': 'jyew',
+            # 'user_id': status.user.id_str,
+            # 'profile_image_url': status.user.profile_image_url_https,
+            # 'followers': status.user.followers_count
+        }      
+        producer.send(kafka_topic, data)
         producer.flush()
         return 200
 
