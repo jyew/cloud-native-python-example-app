@@ -70,7 +70,9 @@ api.add_resource(send_data_to_kafka, '/tweets')
 producer = KafkaProducer(
     bootstrap_servers=bootstrap_servers,
     value_serializer=lambda x: dumps(x).encode('utf-8'),
-    api_version=(0, 10, 2)
+    api_version=(0, 10, 2),
+    security_protocol = 'SASL_PLAINTEXT', 
+    sasl_mechanism = 'PLAIN'
 )
 
 
