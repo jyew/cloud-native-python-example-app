@@ -69,6 +69,7 @@ class get_data_from_kafka(Resource):
             print ("%s:%d:%d: key=%s value=%s" % (message.topic, message.partition,
                                                 message.offset, message.key,
                                                 message.value))
+        return message
 
 api.add_resource(Health, '/health')
 api.add_resource(send_data_to_kafka, '/tweets')
