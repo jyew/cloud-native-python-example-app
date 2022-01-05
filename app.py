@@ -14,7 +14,7 @@ import random
 import logging as log
 import configparser
 
-# log.basicConfig(level=log.DEBUG)
+log.basicConfig(level=log.DEBUG)
 
 app = Flask(__name__)
 CORS(app)
