@@ -20,7 +20,7 @@ parser = reqparse.RequestParser()
 
 # configure to be environment variable later
 kafka_topic = 'tweets'
-bootstrap_servers = 'my-route-without-auth-amq-streams.apps.cluster-4987.4987.sandbox1668.opentlc.com'
+bootstrap_servers = 'my-route-without-auth-amq-streams.apps.cluster-4987.4987.sandbox1668.opentlc.com:8080'
 
 
 @app.route('/')
