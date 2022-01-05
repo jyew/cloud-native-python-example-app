@@ -11,6 +11,10 @@ from json import loads
 import os
 import re
 import random
+import logging as log
+import configparser
+
+log.basicConfig(level=log.DEBUG)
 
 app = Flask(__name__)
 CORS(app)
@@ -35,7 +39,7 @@ class Health(Resource):
 
 class send_data_to_kafka(Resource):
     def get(self):
-        data = {'latest_tweet': 'dummy'}
+        data = {'latest_tweet': 'dummy'}        
         producer.send(kafka_topic, value=data)
         producer.flush()
         return 200
