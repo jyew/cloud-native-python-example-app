@@ -14,7 +14,7 @@ import random
 import logging as log
 import configparser
 
-log.basicConfig(level=log.DEBUG)
+# log.basicConfig(level=log.DEBUG)
 
 app = Flask(__name__)
 CORS(app)
@@ -63,18 +63,30 @@ class send_data_to_kafka(Resource):
     #     return {todo_id: todos[todo_id]}
 
 
+class get_data_from_kafka(Resource):
+    def get(self):
+        for message in consumer:
+            print ("%s:%d:%d: key=%s value=%s" % (message.topic, message.partition,
+                                                message.offset, message.key,
+                                                message.value))
+
 api.add_resource(Health, '/health')
 api.add_resource(send_data_to_kafka, '/tweets')
+api.add_resource(get_data_from_kafka, '/show')
 
 
 producer = KafkaProducer(
     bootstrap_servers=bootstrap_servers,
     value_serializer=lambda x: dumps(x).encode('utf-8'),
-    # api_version=(0, 10, 2),
-    # security_protocol = 'SASL_PLAINTEXT', 
-    # sasl_mechanism = 'PLAIN'
 )
 
+consumer = KafkaConsumer(
+    kafka_topic,
+    bootstrap_servers=bootstrap_servers,
+    auto_offset_reset='earliest',
+    # group_id='consumer_group_1',
+    enable_auto_commit=True,
+    value_deserializer=lambda x: loads(x.decode('utf-8')))
 
 
 
