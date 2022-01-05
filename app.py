@@ -3,6 +3,7 @@ from flask import Response
 from flask import render_template
 from flask import request
 from flask_cors import CORS
+from flask import jsonify
 from flask_restful import Api, Resource, reqparse
 from kafka import KafkaConsumer
 from kafka import KafkaProducer
@@ -69,7 +70,7 @@ class get_data_from_kafka(Resource):
             print ("%s:%d:%d: key=%s value=%s" % (message.topic, message.partition,
                                                 message.offset, message.key,
                                                 message.value))
-        return message
+        return jsonify(message)
 
 api.add_resource(Health, '/health')
 api.add_resource(send_data_to_kafka, '/tweets')
