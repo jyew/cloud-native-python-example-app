@@ -52,7 +52,8 @@ class send_data_to_kafka(Resource):
             # 'followers': status.user.followers_count
         }      
         producer.send(kafka_topic, data)
-        #producer.flush()
+        producer.flush()
+        print('posted to kafka:', data)
         return 200
 
     # def post(self):
