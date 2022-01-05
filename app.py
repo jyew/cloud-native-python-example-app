@@ -67,9 +67,10 @@ class send_data_to_kafka(Resource):
 class get_data_from_kafka(Resource):
     def get(self):
         for message in consumer:
-            print ("%s:%d:%d: key=%s value=%s" % (message.topic, message.partition,
-                                                message.offset, message.key,
-                                                message.value))
+            # print ("%s:%d:%d: key=%s value=%s" % (message.topic, message.partition,
+            #                                     message.offset, message.key,
+            #                                     message.value))
+            print(message)
         return jsonify(message)
 
 api.add_resource(Health, '/health')
