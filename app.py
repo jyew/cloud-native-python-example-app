@@ -14,7 +14,7 @@ import random
 import logging as log
 import configparser
 
-log.basicConfig(level=log.DEBUG)
+# log.basicConfig(level=log.DEBUG)
 
 app = Flask(__name__)
 CORS(app)
@@ -51,13 +51,6 @@ class send_data_to_kafka(Resource):
             # 'profile_image_url': status.user.profile_image_url_https,
             # 'followers': status.user.followers_count
         }     
-
-        producer = KafkaProducer(
-            bootstrap_servers=bootstrap_servers,
-            value_serializer=lambda x: dumps(x).encode('utf-8'),
-            api_version=(0, 10, 2)
-        )
-
 
         producer.send(kafka_topic, data)
         producer.flush()
