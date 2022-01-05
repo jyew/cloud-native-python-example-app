@@ -71,7 +71,7 @@ class get_data_from_kafka(Resource):
             #                                     message.offset, message.key,
             #                                     message.value))
             print(message)
-        return jsonify(message)
+        return message.value
 
 api.add_resource(Health, '/health')
 api.add_resource(send_data_to_kafka, '/tweets')
