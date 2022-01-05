@@ -38,7 +38,7 @@ class send_data_to_kafka(Resource):
         data = {'latest_tweet': 'dummy'}
         producer.send(kafka_topic, value=data)
         producer.flush()
-
+        return 200
 
     # def post(self):
     #     args = parser.parse_args()
