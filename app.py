@@ -50,7 +50,15 @@ class send_data_to_kafka(Resource):
             # 'user_id': status.user.id_str,
             # 'profile_image_url': status.user.profile_image_url_https,
             # 'followers': status.user.followers_count
-        }      
+        }     
+
+        producer = KafkaProducer(
+            bootstrap_servers=bootstrap_servers,
+            value_serializer=lambda x: dumps(x).encode('utf-8'),
+            api_version=(0, 10, 2)
+        )
+
+
         producer.send(kafka_topic, data)
         producer.flush()
         print('posted to kafka:', data)
