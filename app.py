@@ -1,6 +1,5 @@
 from flask import Flask
 from flask import Response
-from flask import render_template
 from flask import request
 from flask_cors import CORS
 from flask import jsonify
@@ -14,6 +13,7 @@ import re
 import random
 import logging as log
 import configparser
+import tweepy
 
 # log.basicConfig(level=log.DEBUG)
 
@@ -24,8 +24,23 @@ api = Api(app)
 parser = reqparse.RequestParser()
 
 # configure to be environment variable later
-kafka_topic = 'tweets'
+dummy_topic = 'tweets'
 bootstrap_servers = 'my-cluster-kafka-bootstrap.amq-streams.svc:9092'
+
+kafka_topic = os.environ['KAFKA_TOPIC']
+consumer_key = os.environ['TWTR_CONSUMER_KEY']
+consumer_secret = os.environ['TWTR_CONSUMER_SECRET']
+access_token = os.environ['TWTR_ACCESS_TOKEN']
+access_token_secret = os.environ['TWTR_ACCESS_TOKEN_SECRET']
+
+# twitter authentication
+auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
+auth.set_access_token(access_token, access_token_secret)
+api_twitter = tweepy.API(auth)
+
+# If the authentication was successful, this should print the
+# screen name / username of the account
+print(api_twitter.verify_credentials().screen_name)
 
 
 @app.route('/')
@@ -33,6 +48,22 @@ def index():
     # return render_template("index.html")
     return "This is the most amazing app EVER."
  
+class MyStreamListener(tweepy.StreamListener):
+    def on_status(self, status):
+        data = {
+            'id': status.id_str,
+            'tweet': status.text,
+            'source': status.source,
+            'retweeted': status.retweeted,
+            'retweet_count': status.retweet_count,
+            'created_at': str(status.created_at),
+            'username': status.user.screen_name,
+            'user_id': status.user.id_str,
+            'profile_image_url': status.user.profile_image_url_https,
+            'followers': status.user.followers_count
+        }
+        send_data = producer.send(kafka_topic, data)
+        print(send_data)
 
 class Health(Resource):
     def get(self):
@@ -42,40 +73,42 @@ class send_data_to_kafka(Resource):
     def get(self):
         data = {
             'id': 'jyew',
-            # 'tweet': status.text,
-            # 'source': status.source,
-            # 'retweeted': status.retweeted,
-            # 'retweet_count': status.retweet_count,
-            # 'created_at': str(status.created_at),
-            'username': 'jyew',
-            # 'user_id': status.user.id_str,
-            # 'profile_image_url': status.user.profile_image_url_https,
-            # 'followers': status.user.followers_count
+            'value': 'test',
         }     
-
-        producer.send(kafka_topic, data)
+        producer.send(dummy_topic, data)
         producer.flush()
         print('posted to kafka:', data)
         return 200
-
-    # def post(self):
-    #     args = parser.parse_args()
-    #     todos[todo_id] = request.form['data']
-    #     return {todo_id: todos[todo_id]}
 
 
 class get_data_from_kafka(Resource):
     def get(self):
         for message in consumer:
-            # print ("%s:%d:%d: key=%s value=%s" % (message.topic, message.partition,
-            #                                     message.offset, message.key,
-            #                                     message.value))
             print(message)
         return message.value
+
+class twitter_to_kafka(Resource):
+    def get(self):
+        parser.add_argument('keyword', action='append')
+        # parser.add_argument('topic')
+        args = parser.parse_args()
+        print('args', args['keyword'])
+        #print('args', args['topic'])
+        # args['topic']
+        global track_keywords
+        if args['keyword'] is not None:
+            track_keywords = args['keyword']
+
+        myStreamListener = MyStreamListener()
+        myStream = tweepy.Stream(
+            auth=api_twitter.auth, listener=myStreamListener)
+        myStream.filter(track=track_keywords, languages=["en"])
+        return 200 
 
 api.add_resource(Health, '/health')
 api.add_resource(send_data_to_kafka, '/tweets')
 api.add_resource(get_data_from_kafka, '/show')
+api.add_resource(twitter_to_kafka, '/twitter_to_kafka')
 
 
 producer = KafkaProducer(

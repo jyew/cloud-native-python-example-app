@@ -21,3 +21,4 @@ python-dotenv
 APScheduler==3.6.3
 websocket-client
 kafka-python==2.0.2
+tweepy
