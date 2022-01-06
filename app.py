@@ -58,21 +58,7 @@ class MyStreamListener(tweepy.Stream):
         self.limit = time_limit        
         super(MyStreamListener, self).__init__(consumer_key, consumer_secret,
                                                 access_token, access_token_secret,)
-
-    def on_status(self, status):
-        data = {
-            'id': status.id_str,
-            'tweet': status.text,
-            'source': status.source,
-            'retweeted': status.retweeted,
-            'retweet_count': status.retweet_count,
-            'created_at': str(status.created_at),
-            'username': status.user.screen_name,
-            'user_id': status.user.id_str,
-            'profile_image_url': status.user.profile_image_url_https,
-            'followers': status.user.followers_count
-        }
-
+    def on_data(self, data):
         if (time.time() - self.start_time) < self.limit:
             print(data)
             #send_data = producer.send(kafka_topic, data)
@@ -81,9 +67,34 @@ class MyStreamListener(tweepy.Stream):
         else:
             print('Max seconds reached = ' + str(self.limit))
             print('why still get data', data)
-            return False
+            return False        
 
-d
+
+    # def on_status(self, status):
+    #     data = {
+    #         'id': status.id_str,
+    #         'tweet': status.text,
+    #         'source': status.source,
+    #         'retweeted': status.retweeted,
+    #         'retweet_count': status.retweet_count,
+    #         'created_at': str(status.created_at),
+    #         'username': status.user.screen_name,
+    #         'user_id': status.user.id_str,
+    #         'profile_image_url': status.user.profile_image_url_https,
+    #         'followers': status.user.followers_count
+    #     }
+
+    #     if (time.time() - self.start_time) < self.limit:
+    #         print(data)
+    #         #send_data = producer.send(kafka_topic, data)
+    #         #print(send_data)
+    #         return True
+    #     else:
+    #         print('Max seconds reached = ' + str(self.limit))
+    #         print('why still get data', data)
+    #         return False
+
+
     # def on_error(self, status_code):
     #     if status_code == 420:
     #         #returning False in on_data disconnects the stream
