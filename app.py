@@ -56,14 +56,7 @@ class MyStreamListener(tweepy.Stream):
         # consumer_key, consumer_secret, access_token, access_token_secret, 
         super(MyStreamListener, self).__init__(consumer_key, consumer_secret, access_token, access_token_secret)
         self.start_time = time.time()
-        self.limit = time_limit
-        # self.consumer_key = consumer_key
-        # self.consumer_secret = consumer_secret
-        # self.access_token = access_token
-        # self.access_token_secret = access_token_secret
-        
-        # self.saveFile = open('abcd.json', 'a')
-        
+        self.limit = time_limit        
 
     def on_data(self, data):
         if (time.time() - self.start_time) < self.limit:
@@ -88,8 +81,11 @@ class MyStreamListener(tweepy.Stream):
             'profile_image_url': status.user.profile_image_url_https,
             'followers': status.user.followers_count
         }
-        send_data = producer.send(kafka_topic, data)
-        print(send_data)
+        print(data)
+        print(kafka_topic)
+        
+        #send_data = producer.send(kafka_topic, data)
+        #print(send_data)
 
 class Health(Resource):
     def get(self):
@@ -115,23 +111,13 @@ class get_data_from_kafka(Resource):
 
 class twitter_to_kafka(Resource):
     def get(self):
-        parser.add_argument('keyword', action='append')
-        # parser.add_argument('topic')
+        parser.add_argument('keyword', action='append', type=str)
         args = parser.parse_args()
         print('args', args['keyword'])
-        #print('args', args['topic'])
-        # args['topic']
         global track_keywords
         if args['keyword'] is not None:
             track_keywords = args['keyword']
 
-        # myStream = tweepy.Stream(
-        #     auth=api_twitter.auth, 
-        #     # consumer_key=consumer_key,
-        #     # consumer_secret=consumer_secret,
-        #     # access_token=access_token,
-        #     # access_token_secret=access_token_secret,
-        #     listener=MyStreamListener(time_limit=10))
         myStream = MyStreamListener(
             consumer_key=consumer_key,
             consumer_secret=consumer_secret,
