@@ -87,6 +87,11 @@ class MyStreamListener(tweepy.Stream):
         #send_data = producer.send(kafka_topic, data)
         #print(send_data)
 
+    def on_error(self, status_code):
+        if status_code == 420:
+            #returning False in on_data disconnects the stream
+            return False
+
 class Health(Resource):
     def get(self):
         return "Health_OK"
