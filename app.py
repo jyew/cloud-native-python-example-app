@@ -119,7 +119,12 @@ class twitter_to_kafka(Resource):
             track_keywords = args['keyword']
 
         myStream = tweepy.Stream(
-            auth=api_twitter.auth, listener=MyStreamListener(time_limit=10))
+            # auth=api_twitter.auth, 
+            consumer_key=consumer_key,
+            consumer_secret=consumer_secret,
+            access_token=access_token,
+            access_token_secret=access_token_secret,
+            listener=MyStreamListener(time_limit=10))
         myStream.filter(track=track_keywords, languages=["en"])
         return 200 
 
