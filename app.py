@@ -128,7 +128,7 @@ class twitter_to_kafka(Resource):
             consumer_secret=consumer_secret,
             access_token=access_token,
             access_token_secret=access_token_secret,
-            time_limit=10
+            time_limit=60
         )
         myStream.filter(track=track_keywords, languages=["en"])
         return 200 
