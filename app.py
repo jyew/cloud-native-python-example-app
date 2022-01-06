@@ -117,10 +117,9 @@ class twitter_to_kafka(Resource):
         global track_keywords
         if args['keyword'] is not None:
             track_keywords = args['keyword']
-
-        myStreamListener = MyStreamListener()
+            
         myStream = tweepy.Stream(
-            auth=api_twitter.auth, listener=myStreamListener(time_limit=10))
+            auth=api_twitter.auth, listener=MyStreamListener(time_limit=10))
         myStream.filter(track=track_keywords, languages=["en"])
         return 200 
 
