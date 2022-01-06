@@ -80,14 +80,14 @@ class MyStreamListener(tweepy.Stream):
             return True
         else:
             print('Max seconds reached = ' + str(self.limit))
-            print(data)
+            print('why still get data', data)
             return False
 
 
-    def on_error(self, status_code):
-        if status_code == 420:
-            #returning False in on_data disconnects the stream
-            return False
+    # def on_error(self, status_code):
+    #     if status_code == 420:
+    #         #returning False in on_data disconnects the stream
+    #         return False
 
 class Health(Resource):
     def get(self):
