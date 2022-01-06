@@ -58,16 +58,6 @@ class MyStreamListener(tweepy.Stream):
         self.start_time = time.time()
         self.limit = time_limit        
 
-    def on_data(self, data):
-        if (time.time() - self.start_time) < self.limit:
-            # self.saveFile.write(data)
-            # self.saveFile.write('\n')
-            return True
-        else:
-            # self.saveFile.close()
-            return False
-
-
     def on_status(self, status):
         data = {
             'id': status.id_str,
@@ -86,6 +76,15 @@ class MyStreamListener(tweepy.Stream):
         
         #send_data = producer.send(kafka_topic, data)
         #print(send_data)
+
+        if (time.time() - self.start_time) < self.limit:
+            # self.saveFile.write(data)
+            # self.saveFile.write('\n')
+            return True
+        else:
+            # self.saveFile.close()
+            return False
+
 
     def on_error(self, status_code):
         if status_code == 420:
