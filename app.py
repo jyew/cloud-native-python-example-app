@@ -52,8 +52,12 @@ def index():
 class MyStreamListener(tweepy.Stream):
     """ make default streaming from Twitter for 10s """
 
-    def __init__(self, time_limit=10):
+    def __init__(self, consumer_key, consumer_secret, access_token, access_token_secret, time_limit=10):
         self.start_time = time.time()
+        self.consumer_key = consumer_key
+        self.consumer_secret = consumer_secret
+        self.access_token = access_token
+        self.access_token_secret = access_token_secret
         self.limit = time_limit
         # self.saveFile = open('abcd.json', 'a')
         super(MyStreamListener, self).__init__()
