@@ -56,7 +56,7 @@ class MyStreamListener(tweepy.Stream):
         self.start_time = time.time()
         self.limit = time_limit
         # self.saveFile = open('abcd.json', 'a')
-        super(MyStreamListener, self).__init__()
+        # super(MyStreamListener, self).__init__()
 
     def on_data(self, data):
         if (time.time() - self.start_time) < self.limit:
@@ -117,7 +117,7 @@ class twitter_to_kafka(Resource):
         global track_keywords
         if args['keyword'] is not None:
             track_keywords = args['keyword']
-            
+
         myStream = tweepy.Stream(
             auth=api_twitter.auth, listener=MyStreamListener(time_limit=10))
         myStream.filter(track=track_keywords, languages=["en"])
