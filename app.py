@@ -127,14 +127,23 @@ class twitter_to_kafka(Resource):
         if args['seconds'] is not None:
             time_limit = args['seconds']
 
-        myStream = MyStreamListener(
-            consumer_key=consumer_key,
-            consumer_secret=consumer_secret,
-            access_token=access_token,
-            access_token_secret=access_token_secret,
-            time_limit=time_limit
-        )
-        myStream.filter(track=track_keywords, languages=["en"])
+        # myStream = MyStreamListener(
+        #     consumer_key=consumer_key,
+        #     consumer_secret=consumer_secret,
+        #     access_token=access_token,
+        #     access_token_secret=access_token_secret,
+        #     time_limit=time_limit
+        # )
+        # myStream.filter(track=track_keywords, languages=["en"])
+
+        # test usage of tweepy
+
+
+        public_tweets = api_twitter.home_timeline()
+        for tweet in public_tweets:
+            print(tweet.text)
+
+
         return 200 
 
 api.add_resource(Health, '/health')
