@@ -79,7 +79,7 @@ class MyStreamListener(tweepy.Stream):
             #print(send_data)
             return True
         else:
-            # self.saveFile.close()
+            print('Max seconds reached = ' + str(self.limit))
             return False
 
 
