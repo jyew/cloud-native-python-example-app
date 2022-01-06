@@ -117,18 +117,22 @@ class get_data_from_kafka(Resource):
 class twitter_to_kafka(Resource):
     def get(self):
         parser.add_argument('keyword', action='append', type=str)
+        parser.add_argument('seconds', type=int)
         args = parser.parse_args()
         print('args', args['keyword'])
         global track_keywords
+
         if args['keyword'] is not None:
             track_keywords = args['keyword']
+        if args['seconds'] is not None:
+            time_limit = args['seconds']
 
         myStream = MyStreamListener(
             consumer_key=consumer_key,
             consumer_secret=consumer_secret,
             access_token=access_token,
             access_token_secret=access_token_secret,
-            time_limit=60
+            time_limit=time_limit
         )
         myStream.filter(track=track_keywords, languages=["en"])
         return 200 
