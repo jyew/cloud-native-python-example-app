@@ -50,14 +50,13 @@ def index():
     return "This is the most amazing app EVER."
  
 class MyStreamListener(tweepy.Stream):
-    """ default streaming from Twitter for 10s """
+    """ make default streaming from Twitter for 10s """
 
-    def __init__(self, auth, time_limit=10):
+    def __init__(self, time_limit=10):
         self.start_time = time.time()
         self.limit = time_limit
-        self.auth = auth
         # self.saveFile = open('abcd.json', 'a')
-        # super(MyStreamListener, self).__init__()
+        super(MyStreamListener, self).__init__()
 
     def on_data(self, data):
         if (time.time() - self.start_time) < self.limit:
@@ -119,13 +118,20 @@ class twitter_to_kafka(Resource):
         if args['keyword'] is not None:
             track_keywords = args['keyword']
 
-        myStream = tweepy.Stream(
-            auth=api_twitter.auth, 
-            # consumer_key=consumer_key,
-            # consumer_secret=consumer_secret,
-            # access_token=access_token,
-            # access_token_secret=access_token_secret,
-            listener=MyStreamListener(time_limit=10))
+        # myStream = tweepy.Stream(
+        #     auth=api_twitter.auth, 
+        #     # consumer_key=consumer_key,
+        #     # consumer_secret=consumer_secret,
+        #     # access_token=access_token,
+        #     # access_token_secret=access_token_secret,
+        #     listener=MyStreamListener(time_limit=10))
+        myStream = MyStreamListener(
+            consumer_key=consumer_key,
+            consumer_secret=consumer_secret,
+            access_token=access_token,
+            access_token_secret=access_token_secret,
+            time_limit=10
+        )
         myStream.filter(track=track_keywords, languages=["en"])
         return 200 
 
