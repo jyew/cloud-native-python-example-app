@@ -16,7 +16,7 @@ import configparser
 import tweepy
 import time
 
-log.basicConfig(level=log.DEBUG)
+# log.basicConfig(level=log.DEBUG)
 
 app = Flask(__name__)
 CORS(app)
@@ -54,9 +54,10 @@ class MyStreamListener(tweepy.Stream):
 
     def __init__(self, consumer_key, consumer_secret, access_token, access_token_secret, time_limit=10):
         # consumer_key, consumer_secret, access_token, access_token_secret, 
-        super(MyStreamListener, self).__init__(consumer_key, consumer_secret, access_token, access_token_secret)
         self.start_time = time.time()
         self.limit = time_limit        
+        super(MyStreamListener, self).__init__(consumer_key, consumer_secret,
+                                                access_token, access_token_secret,)
 
     def on_status(self, status):
         data = {
@@ -71,15 +72,11 @@ class MyStreamListener(tweepy.Stream):
             'profile_image_url': status.user.profile_image_url_https,
             'followers': status.user.followers_count
         }
-        print(data)
-        print(kafka_topic)
-        
-        #send_data = producer.send(kafka_topic, data)
-        #print(send_data)
 
         if (time.time() - self.start_time) < self.limit:
-            # self.saveFile.write(data)
-            # self.saveFile.write('\n')
+            print(data)
+            #send_data = producer.send(kafka_topic, data)
+            #print(send_data)
             return True
         else:
             # self.saveFile.close()
@@ -134,13 +131,6 @@ class twitter_to_kafka(Resource):
             time_limit=time_limit
         )
         myStream.filter(track=track_keywords, languages=["en"])
-
-        # # test usage of tweepy
-        # public_tweets = api_twitter.home_timeline()
-        # for tweet in public_tweets:
-        #     print(tweet.text)
-
-
         return 200 
 
 api.add_resource(Health, '/health')
@@ -162,7 +152,6 @@ consumer = KafkaConsumer(
     enable_auto_commit=True,
     value_deserializer=lambda x: loads(x.decode('utf-8')))
 
-sdsd
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port='8080')
