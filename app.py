@@ -83,7 +83,7 @@ class MyStreamListener(tweepy.Stream):
             print('why still get data', data)
             return False
 
-
+d
     # def on_error(self, status_code):
     #     if status_code == 420:
     #         #returning False in on_data disconnects the stream
