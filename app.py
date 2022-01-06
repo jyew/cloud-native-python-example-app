@@ -14,6 +14,7 @@ import random
 import logging as log
 import configparser
 import tweepy
+import time
 
 # log.basicConfig(level=log.DEBUG)
 
@@ -48,7 +49,25 @@ def index():
     # return render_template("index.html")
     return "This is the most amazing app EVER."
  
-class MyStreamListener(tweepy.StreamListener):
+class MyStreamListener(tweepy.Stream):
+    """ default streaming from Twitter for 10s """
+
+    def __init__(self, time_limit=10):
+        self.start_time = time.time()
+        self.limit = time_limit
+        # self.saveFile = open('abcd.json', 'a')
+        super(MyStreamListener, self).__init__()
+
+    def on_data(self, data):
+        if (time.time() - self.start_time) < self.limit:
+            # self.saveFile.write(data)
+            # self.saveFile.write('\n')
+            return True
+        else:
+            # self.saveFile.close()
+            return False
+
+
     def on_status(self, status):
         data = {
             'id': status.id_str,
@@ -101,7 +120,7 @@ class twitter_to_kafka(Resource):
 
         myStreamListener = MyStreamListener()
         myStream = tweepy.Stream(
-            auth=api_twitter.auth, listener=myStreamListener)
+            auth=api_twitter.auth, listener=myStreamListener(time_limit=10))
         myStream.filter(track=track_keywords, languages=["en"])
         return 200 
 
