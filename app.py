@@ -162,7 +162,7 @@ consumer = KafkaConsumer(
     enable_auto_commit=True,
     value_deserializer=lambda x: loads(x.decode('utf-8')))
 
-
+sdsd
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port='8080')
