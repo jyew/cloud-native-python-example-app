@@ -19,7 +19,7 @@ import time
 import datetime
 import pprint
 
-log.basicConfig(level=log.DEBUG)
+# log.basicConfig(level=log.DEBUG)
 
 app = Flask(__name__)
 CORS(app)
