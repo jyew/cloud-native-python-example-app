@@ -8,6 +8,7 @@ from kafka import KafkaConsumer
 from kafka import KafkaProducer
 from json import dumps
 from json import loads
+from pymongo import MongoClient
 import os
 import re
 import random
@@ -15,6 +16,7 @@ import logging as log
 import configparser
 import tweepy
 import time
+import datetime
 
 # log.basicConfig(level=log.DEBUG)
 
@@ -27,12 +29,23 @@ parser = reqparse.RequestParser()
 # configure to be environment variable later
 dummy_topic = 'tweets'
 bootstrap_servers = 'my-cluster-kafka-bootstrap.amq-streams.svc:9092'
+mongodb_host = 'mongo:27017'
 
 kafka_topic = os.environ['KAFKA_TOPIC']
 consumer_key = os.environ['TWTR_CONSUMER_KEY']
 consumer_secret = os.environ['TWTR_CONSUMER_SECRET']
 access_token = os.environ['TWTR_ACCESS_TOKEN']
 access_token_secret = os.environ['TWTR_ACCESS_TOKEN_SECRET']
+
+# mongo credentials
+mongodb_user = os.environ['MONGODB_USER']
+mongodb_password = os.environ['MONGODB_PASSWORD']
+mongodb_db_name = os.environ['MONGODB_DB_NAME']
+mongodb_collection_name = 'twitter_collection'
+mongoclient = MongoClient(host='mongo', port=27017, username=mongodb_user,
+                            password=mongodb_password, authSource=mongodb_db_name)
+db = mongoclient[mongodb_db_name]
+collection = mongoclient[mongodb_db_name][mongodb_collection_name]
 
 # twitter authentication
 auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
@@ -57,18 +70,7 @@ class MyStreamListener(tweepy.Stream):
         self.start_time = time.time()
         self.limit = time_limit        
         super(MyStreamListener, self).__init__(consumer_key, consumer_secret,
-                                                access_token, access_token_secret,)
-    # def on_data(self, data):
-    #     if (time.time() - self.start_time) < self.limit:
-    #         print(data)
-    #         #send_data = producer.send(kafka_topic, data)
-    #         #print(send_data)
-    #         return True
-    #     else:
-    #         print('Max seconds reached = ' + str(self.limit))
-    #         print('why still get data', data)
-    #         self.running = False
-    #         return False        
+                                                access_token, access_token_secret,) 
 
     def on_status(self, status):
         data = {
@@ -94,11 +96,10 @@ class MyStreamListener(tweepy.Stream):
             self.running = False
             return False
 
-
-    # def on_error(self, status_code):
-    #     if status_code == 420:
-    #         #returning False in on_data disconnects the stream
-    #         return False
+    def on_error(self, status_code):
+        if status_code == 420:
+            self.running = False
+            return False
 
 class Health(Resource):
     def get(self):
@@ -145,10 +146,61 @@ class twitter_to_kafka(Resource):
         myStream.filter(track=track_keywords, languages=["en"])
         return 200 
 
+class test_mongodb(Resource):
+    def get(self):
+        collection = mongoclient[mongodb_db_name][mongodb_collection_name]
+        message = {"author": "Jordan",
+                    "text": "My first blog post!",
+                    "tags": ["mongodb", "python", "pymongo"],
+                    "date": datetime.datetime.utcnow()}
+        message_id = collection.insert_one(message).inserted_id
+        print(message_id)
+        print(mongoclient[mongodb_db_name].list_collection_names())
+
+# class kafka_to_mongodb(Resource):
+#     def get(self):
+#         parser.add_argument('keyword', action='append')
+#         args = parser.parse_args()
+#         global track_keywords
+#         db_item = {}
+#         if args['keyword'] is not None:
+#             track_keywords = args['keyword']
+#         countDocsWritten = 0
+#         collection = mongoclient[mongodb_db_name][mongodb_collection_name]
+#         # db.topic_name.drop()
+#         for message in consumer:
+#             message = message.value
+#             tidy_tweet = message['tweet'].strip().encode('ascii', 'ignore')
+#             #print(message)
+#             if len(tidy_tweet) <= 5:
+#                 break
+#             #print(tidy_tweet[0:4])
+#             #if len((re.findall('http',tidy_tweet)) > 0:
+#             #        print tidy_tweet
+#             #        print("After http")            
+#             #if tidy_tweet[0:4] == "http":
+#             #    break
+#             for keyword in track_keywords:
+#                 if len(re.findall(keyword,tidy_tweet)) > 0:
+#                     db_item['_id'] = ObjectId()
+#                     db_item['keyword'] = keyword
+#                     db_item['tweet'] = tidy_tweet
+#                     #tidy_tweet.update({'keyword': keyword})
+#                     collection.insert_one(db_item)
+#                     countDocsWritten = countDocsWritten + 1
+#                     print('\nWritten %d documents to MongoDb' % (countDocsWritten))
+#                     print(db_item)            
+#             # if tidy_tweet.find(count):
+#             #response = client.Sentiment({'text': tidy_tweet})
+#             #collection.insert_one(message)
+
+
+
 api.add_resource(Health, '/health')
 api.add_resource(send_data_to_kafka, '/tweets')
 api.add_resource(get_data_from_kafka, '/show')
 api.add_resource(twitter_to_kafka, '/twitter_to_kafka')
+api.add_resource(test_mongodb, '/test_mongo')
 
 
 producer = KafkaProducer(
