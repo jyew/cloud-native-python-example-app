@@ -201,7 +201,8 @@ class kafka_to_mongodb(Resource):
             # # if tidy_tweet.find(count):
             # #response = client.Sentiment({'text': tidy_tweet})
             # #collection.insert_one(message)
-        return jsonify({'saved {} messages'.format(countDocsWritten)})
+        data = {'message': 'saved {} messages'.format(countDocsWritten), 'code': 'SUCCESS'}
+        return jsonify(data)
 
 
 api.add_resource(Health, '/health')
