@@ -166,7 +166,7 @@ class test_mongodb(Resource):
             pprint.pprint(post)
 
         # erase data
-        collection.delete_many(message)
+        collection.delete_many({"author": "Jordan"})
 
         return 200
 
