@@ -40,7 +40,7 @@ access_token_secret = os.environ['TWTR_ACCESS_TOKEN_SECRET']
 # mongo credentials
 mongodb_user = os.environ['MONGODB_USER']
 mongodb_password = os.environ['MONGODB_PASSWORD']
-mongodb_db_name = os.environ['MONGODB_DB_NAME']
+mongodb_db_name = os.environ['MONGODB_DATABASE']
 mongodb_collection_name = 'twitter_collection'
 mongoclient = MongoClient(host='mongo', port=27017, username=mongodb_user,
                             password=mongodb_password, authSource=mongodb_db_name)
