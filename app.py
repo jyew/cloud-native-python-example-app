@@ -19,7 +19,7 @@ import time
 import datetime
 import pprint
 
-# log.basicConfig(level=log.DEBUG)
+log.basicConfig(level=log.DEBUG)
 
 app = Flask(__name__)
 CORS(app)
@@ -90,7 +90,7 @@ class MyStreamListener(tweepy.Stream):
         }
 
         if (time.time() - self.start_time) < self.limit:
-            # print(data)
+            print(data)
             send_data = producer.send(kafka_topic, data)
             print(send_data)
             return True
