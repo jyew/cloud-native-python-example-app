@@ -90,9 +90,9 @@ class MyStreamListener(tweepy.Stream):
         }
 
         if (time.time() - self.start_time) < self.limit:
-            print(data)
-            #send_data = producer.send(kafka_topic, data)
-            #print(send_data)
+            # print(data)
+            send_data = producer.send(kafka_topic, data)
+            print(send_data)
             return True
         else:
             print('Max seconds reached = ' + str(self.limit))
@@ -167,46 +167,39 @@ class test_mongodb(Resource):
 
         # erase data
         collection.delete_many({"author": "Jordan"})
-
         return 200
 
 
-# class kafka_to_mongodb(Resource):
-#     def get(self):
-#         parser.add_argument('keyword', action='append')
-#         args = parser.parse_args()
-#         global track_keywords
-#         db_item = {}
-#         if args['keyword'] is not None:
-#             track_keywords = args['keyword']
-#         countDocsWritten = 0
-#         collection = mongoclient[mongodb_db_name][mongodb_collection_name]
-#         # db.topic_name.drop()
-#         for message in consumer:
-#             message = message.value
-#             tidy_tweet = message['tweet'].strip().encode('ascii', 'ignore')
-#             #print(message)
-#             if len(tidy_tweet) <= 5:
-#                 break
-#             #print(tidy_tweet[0:4])
-#             #if len((re.findall('http',tidy_tweet)) > 0:
-#             #        print tidy_tweet
-#             #        print("After http")            
-#             #if tidy_tweet[0:4] == "http":
-#             #    break
-#             for keyword in track_keywords:
-#                 if len(re.findall(keyword,tidy_tweet)) > 0:
-#                     db_item['_id'] = ObjectId()
-#                     db_item['keyword'] = keyword
-#                     db_item['tweet'] = tidy_tweet
-#                     #tidy_tweet.update({'keyword': keyword})
-#                     collection.insert_one(db_item)
-#                     countDocsWritten = countDocsWritten + 1
-#                     print('\nWritten %d documents to MongoDb' % (countDocsWritten))
-#                     print(db_item)            
-#             # if tidy_tweet.find(count):
-#             #response = client.Sentiment({'text': tidy_tweet})
-#             #collection.insert_one(message)
+class kafka_to_mongodb(Resource):
+    def get(self):
+        parser.add_argument('keyword', action='append')
+        args = parser.parse_args()
+        global track_keywords
+        db_item = {}
+        if args['keyword'] is not None:
+            track_keywords = args['keyword']
+        countDocsWritten = 0
+        # collection = mongoclient[mongodb_db_name][mongodb_collection_name]
+        for message in consumer:
+            message = message.value
+            tidy_tweet = message['tweet'].strip().encode('ascii', 'ignore')
+            print(tidy_tweet)
+            # #print(message)
+            # if len(tidy_tweet) <= 5:
+            #     break
+            # for keyword in track_keywords:
+            #     if len(re.findall(keyword,tidy_tweet)) > 0:
+            #         db_item['_id'] = ObjectId()
+            #         db_item['keyword'] = keyword
+            #         db_item['tweet'] = tidy_tweet
+            #         #tidy_tweet.update({'keyword': keyword})
+            #         collection.insert_one(db_item)
+            #         countDocsWritten = countDocsWritten + 1
+            #         print('\nWritten %d documents to MongoDb' % (countDocsWritten))
+            #         print(db_item)            
+            # # if tidy_tweet.find(count):
+            # #response = client.Sentiment({'text': tidy_tweet})
+            # #collection.insert_one(message)
 
 
 
