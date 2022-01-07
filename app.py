@@ -184,6 +184,7 @@ class kafka_to_mongodb(Resource):
             message = message.value
             tidy_tweet = message['tweet'].strip().encode('ascii', 'ignore')
             print(tidy_tweet)
+            countDocsWritten = countDocsWritten + 1
             # #print(message)
             # if len(tidy_tweet) <= 5:
             #     break
@@ -200,7 +201,7 @@ class kafka_to_mongodb(Resource):
             # # if tidy_tweet.find(count):
             # #response = client.Sentiment({'text': tidy_tweet})
             # #collection.insert_one(message)
-
+        return jsonify({'saved {} messages'.format(countDocsWritten)})
 
 
 api.add_resource(Health, '/health')
@@ -208,6 +209,7 @@ api.add_resource(send_data_to_kafka, '/tweets')
 api.add_resource(get_data_from_kafka, '/show')
 api.add_resource(twitter_to_kafka, '/twitter_to_kafka')
 api.add_resource(test_mongodb, '/test_mongo')
+api.add_resource(kafka_to_mongodb, '/kafka_to_mongodb')
 
 
 producer = KafkaProducer(
