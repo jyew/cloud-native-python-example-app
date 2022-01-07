@@ -17,6 +17,7 @@ import configparser
 import tweepy
 import time
 import datetime
+import pprint
 
 # log.basicConfig(level=log.DEBUG)
 
@@ -155,12 +156,20 @@ class test_mongodb(Resource):
                     "text": "My first blog post!",
                     "tags": ["mongodb", "python", "pymongo"],
                     "date": datetime.datetime.utcnow()}
+        # write data
         message_id = collection.insert_one(message).inserted_id
         print(message_id)
         print(mongoclient[mongodb_db_name].list_collection_names())
+        
+        # read data
+        for post in collection.find():
+            pprint.pprint(post)
+
+        # erase data
+        collection.delete_many(message)
+
         return 200
-        # print(mongodb_user, mongodb_password, mongodb_db_name)
-        # return 200
+
 
 # class kafka_to_mongodb(Resource):
 #     def get(self):
