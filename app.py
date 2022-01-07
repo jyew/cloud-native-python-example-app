@@ -42,8 +42,10 @@ mongodb_user = os.environ['MONGODB_USER']
 mongodb_password = os.environ['MONGODB_PASSWORD']
 mongodb_db_name = os.environ['MONGODB_DATABASE']
 mongodb_collection_name = 'twitter_collection'
-mongoclient = MongoClient(host='mongo', port=27017, username=mongodb_user,
-                            password=mongodb_password, authSource=mongodb_db_name)
+mongoclient = MongoClient(host='mongo', port=27017, 
+                        username=mongodb_user,
+                        password=mongodb_password, 
+                        authSource=mongodb_db_name)
 db = mongoclient[mongodb_db_name]
 collection = mongoclient[mongodb_db_name][mongodb_collection_name]
 
@@ -153,10 +155,12 @@ class test_mongodb(Resource):
                     "text": "My first blog post!",
                     "tags": ["mongodb", "python", "pymongo"],
                     "date": datetime.datetime.utcnow()}
-        message_id = collection.insert_one(message).inserted_id
-        print(message_id)
-        print(mongoclient[mongodb_db_name].list_collection_names())
-        return message_id
+        # message_id = collection.insert_one(message).inserted_id
+        # print(message_id)
+        # print(mongoclient[mongodb_db_name].list_collection_names())
+        # return message_id
+        print(mongodb_user, mongodb_password, mongodb_db_name)
+        return 200
 
 # class kafka_to_mongodb(Resource):
 #     def get(self):
