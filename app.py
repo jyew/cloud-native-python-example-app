@@ -29,7 +29,7 @@ parser = reqparse.RequestParser()
 # configure to be environment variable later
 dummy_topic = 'tweets'
 bootstrap_servers = 'my-cluster-kafka-bootstrap.amq-streams.svc:9092'
-mongodb_host = 'mongo:27017'
+mongodb_host = 'mongodb:27017'
 
 kafka_topic = os.environ['KAFKA_TOPIC']
 consumer_key = os.environ['TWTR_CONSUMER_KEY']
@@ -42,7 +42,7 @@ mongodb_user = os.environ['MONGODB_USER']
 mongodb_password = os.environ['MONGODB_PASSWORD']
 mongodb_db_name = os.environ['MONGODB_DATABASE']
 mongodb_collection_name = 'twitter_collection'
-mongoclient = MongoClient(host='mongo', port=27017, 
+mongoclient = MongoClient(host='mongodb', port=27017, 
                         username=mongodb_user,
                         password=mongodb_password, 
                         authSource=mongodb_db_name)
@@ -155,12 +155,12 @@ class test_mongodb(Resource):
                     "text": "My first blog post!",
                     "tags": ["mongodb", "python", "pymongo"],
                     "date": datetime.datetime.utcnow()}
-        # message_id = collection.insert_one(message).inserted_id
-        # print(message_id)
-        # print(mongoclient[mongodb_db_name].list_collection_names())
-        # return message_id
-        print(mongodb_user, mongodb_password, mongodb_db_name)
+        message_id = collection.insert_one(message).inserted_id
+        print(message_id)
+        print(mongoclient[mongodb_db_name].list_collection_names())
         return 200
+        # print(mongodb_user, mongodb_password, mongodb_db_name)
+        # return 200
 
 # class kafka_to_mongodb(Resource):
 #     def get(self):
