@@ -156,6 +156,7 @@ class test_mongodb(Resource):
         message_id = collection.insert_one(message).inserted_id
         print(message_id)
         print(mongoclient[mongodb_db_name].list_collection_names())
+        return message_id
 
 # class kafka_to_mongodb(Resource):
 #     def get(self):
