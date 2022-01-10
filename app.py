@@ -11,6 +11,7 @@ from json import dumps
 from json import loads
 from pymongo import MongoClient
 from bson.objectid import ObjectId
+from bson import json_util
 import os
 import re
 import random
@@ -227,7 +228,12 @@ class get_db_data1(Resource):
             query = {"tweet": {"$regex": keyword, "$options": "gim"}}
             count = collection.count_documents(query)
             data["values"].append(count)
-            data["messages"] = [doc for doc in collection.find(query)]
+
+            # json serializing mongo documents
+            
+            data["messages"] = [dumps(doc, default=json_util.default) for doc in collection.find(query)]
+            #json_docs = [dumps(doc, default=json_util.default) for doc in collection.find(query)]
+            #data["messages"] = [loads(j_doc, object_hook=json_util.object_hook) for j_doc in json_docs]
         return data 
 
 class get_db_data2(Resource):
