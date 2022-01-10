@@ -221,12 +221,13 @@ class get_db_data1(Resource):
             track_keywords = args['keyword']
         data["labels"] = track_keywords
         data["values"] = []
+        data["messages"] = []
         # print(track_keywords)
         for keyword in track_keywords:
-            count = collection.count_documents(
-                {"tweet": {"$regex": keyword, "$options": "gim"}})
+            query = {"tweet": {"$regex": keyword, "$options": "gim"}}
+            count = collection.count_documents(query)
             data["values"].append(count)
-            #print(data)  # Here is the problem
+            data["messages"].append(collection.find(query))
         return data 
 
 class get_db_data2(Resource):
