@@ -19,7 +19,6 @@ import tweepy
 import time
 import datetime
 import pprint
-import json
 
 # log.basicConfig(level=log.DEBUG)
 
@@ -191,9 +190,8 @@ class kafka_to_mongodb(Resource):
         lastOffset = consumer.end_offsets(PARTITIONS)
 
         for message in consumer:
-            print(message)
-            message = message.value
-            tidy_tweet = message['tweet'].strip().encode('ascii', 'ignore')
+            msg = message.value
+            tidy_tweet = msg['tweet'].strip().encode('ascii', 'ignore')
             print(tidy_tweet)
             countDocsWritten = countDocsWritten + 1
             # #print(message)
@@ -302,7 +300,7 @@ consumer = KafkaConsumer(
     auto_offset_reset='earliest',
     # group_id='consumer_group_1',
     enable_auto_commit=True,
-    value_deserializer=lambda m: json.loads(m.decode('utf-8')))
+    value_deserializer=lambda m: loads(m.decode('utf-8')))
 
 
 if __name__ == "__main__":
