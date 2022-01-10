@@ -225,7 +225,7 @@ class get_db_data1(Resource):
         # print(data)
         for keyword in track_keywords:
             count = collection.find(
-                {"tweet": {"$regex": keyword, "$options": "gim"}}).count()
+                {"tweet": {"$regex": keyword, "$options": "gim"}}).count_documents()
             data["values"].append(count)
             #print(data)  # Here is the problem
         return data 
@@ -264,7 +264,7 @@ class get_db_data2(Resource):
             for sentiCount, sentiment in enumerate(sentiments):
                 # print(sentiment)
                 count = collection.find(
-                    {"polarity": sentiment, "keyword": keyword}).count()
+                    {"polarity": sentiment, "keyword": keyword}).count_documents()
                 # print(count)
                 data["datasets"][sentiCount]["data"].append(count)
                 # print(data) ## Here is the problem
