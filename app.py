@@ -19,6 +19,7 @@ import tweepy
 import time
 import datetime
 import pprint
+import json
 
 # log.basicConfig(level=log.DEBUG)
 
@@ -301,7 +302,7 @@ consumer = KafkaConsumer(
     auto_offset_reset='earliest',
     # group_id='consumer_group_1',
     enable_auto_commit=True,
-    value_deserializer=lambda x: loads(x.decode('utf-8')))
+    value_deserializer=lambda m: json.loads(m.decode('utf-8')))
 
 
 if __name__ == "__main__":
