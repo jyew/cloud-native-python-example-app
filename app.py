@@ -190,7 +190,7 @@ class kafka_to_mongodb(Resource):
 
         for message in consumer:
             msg = message.value
-            tidy_tweet = msg['tweet'].strip().encode('ascii', 'ignore')
+            tidy_tweet = msg['tweet'].strip().encode('ascii', 'ignore').decode('utf-8')
             print(tidy_tweet)
             countDocsWritten = countDocsWritten + 1
             if len(tidy_tweet) <= 5:
