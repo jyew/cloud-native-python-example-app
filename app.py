@@ -266,6 +266,7 @@ class get_db_data1(Resource):
         return data 
 
 class get_db_data2(Resource):
+    # generate random results for rendering first
     def get(self):
         collection = mongoclient[mongodb_db_name][mongodb_collection_name]
         data = {}
@@ -293,20 +294,37 @@ class get_db_data2(Resource):
                 'backgroundColor': '#EBCCD1',
             }
         ]
-        # print(track_keywords)
-        # print(data)
-        for keyCount, keyword in enumerate(track_keywords):
-            for sentiCount, sentiment in enumerate(sentiments):
-                # print(sentiment)
-                count = collection.find(
-                    {"polarity": sentiment, "keyword": keyword}).count_documents()
-                # print(count)
-                data["datasets"][sentiCount]["data"].append(count)
-                # print(data) ## Here is the problem
-        #print(data)
 
+        
+        # for keyCount, keyword in enumerate(track_keywords):
+        #     for sentiCount, sentiment in enumerate(sentiments):
+        #         count = collection.count_documents({"polarity": sentiment, "keyword": keyword})
+        #         data["datasets"][sentiCount]["data"].append(count)
 
+        # randomly generate fake results when we don't have sentiment model yet
+        for keyword in track_keywords:
+            query = {"tweet": {"$regex": keyword, "$options": "gim"}}
+            count = collection.count_documents(query)
+
+            count_positive = random.randint(0, count)
+            count_negative = random.randint(0, count - count_positive)
+            count_neutral = count - count_positive - count_negative
+
+            data["datasets"][0]["data"].append(count_positive)
+            data["datasets"][1]["data"].append(count_negative)
+            data["datasets"][2]["data"].append(count_neutral)
         return data
+
+class apply_sentiment(Resource):
+    def get(self):
+        pass
+        # collection = mongoclient[mongodb_db_name][mongodb_collection_name]
+        # for count in range(1,collection.count()):
+        #     record = collection.find().limit(-1).skip(random.randint(1,collection.count())).next()   
+        #     sentiment_analysis_result = client.Sentiment({'text': record['tweet']})
+        #     collection.update_one({'_id':record['_id']},
+        #                             { "$set" : {'polarity': sentiment_analysis_result['polarity'] } })
+        #     print(record)
 
 
 api.add_resource(health, '/health')
@@ -318,6 +336,7 @@ api.add_resource(test_mongodb2, '/test_mongo2')
 api.add_resource(kafka_to_mongodb, '/kafka_to_mongodb')
 api.add_resource(get_db_data1, '/get_db_data1')
 api.add_resource(get_db_data2, '/get_db_data2')
+api.add_resource(apply_sentiment, '/apply_sentiment')
 
 producer = KafkaProducer(
     bootstrap_servers=bootstrap_servers,
