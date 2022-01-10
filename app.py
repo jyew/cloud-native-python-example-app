@@ -6,6 +6,7 @@ from flask import jsonify
 from flask_restful import Api, Resource, reqparse
 from kafka import KafkaConsumer
 from kafka import KafkaProducer
+from kafka import TopicPartition
 from json import dumps
 from json import loads
 from pymongo import MongoClient
@@ -104,7 +105,7 @@ class MyStreamListener(tweepy.Stream):
             self.running = False
             return False
 
-class Health(Resource):
+class health(Resource):
     def get(self):
         return "Health_OK"
 
@@ -169,7 +170,7 @@ class test_mongodb(Resource):
         collection.delete_many({"author": "Jordan"})
         return 200
 
-
+# continue dev here
 class kafka_to_mongodb(Resource):
     def get(self):
         parser.add_argument('keyword', action='append')
@@ -180,6 +181,14 @@ class kafka_to_mongodb(Resource):
             track_keywords = args['keyword']
         countDocsWritten = 0
         # collection = mongoclient[mongodb_db_name][mongodb_collection_name]
+        
+        # obtain the last offset value
+        PARTITIONS = []
+        for partition in consumer.partitions_for_topic(TOPIC):
+            PARTITIONS.append(TopicPartition(TOPIC, partition))
+            
+        lastOffset = consumer.end_offsets(PARTITIONS)
+
         for message in consumer:
             message = message.value
             tidy_tweet = message['tweet'].strip().encode('ascii', 'ignore')
@@ -201,17 +210,84 @@ class kafka_to_mongodb(Resource):
             # # if tidy_tweet.find(count):
             # #response = client.Sentiment({'text': tidy_tweet})
             # #collection.insert_one(message)
+            if message.offset == lastOffset - 1:
+                break
         data = {'message': 'saved {} messages'.format(countDocsWritten), 'code': 'SUCCESS'}
         return jsonify(data)
 
+class get_db_data1(Resource):
+    def get(self):
+        collection = mongoclient[mongodb_db_name][mongodb_collection_name]
+        data = {}
+        parser.add_argument('keyword', action='append')
+        args = parser.parse_args()
+        #print('args', args['keyword'])
+        global track_keywords
+        if args['keyword'] is not None:
+            track_keywords = args['keyword']
+        data["labels"] = track_keywords
+        data["values"] = []
+        # print(track_keywords)
+        # print(data)
+        for keyword in track_keywords:
+            count = collection.find(
+                {"tweet": {"$regex": keyword, "$options": "gim"}}).count()
+            data["values"].append(count)
+            #print(data)  # Here is the problem
+        return data 
 
-api.add_resource(Health, '/health')
+class get_db_data2(Resource):
+    def get(self):
+        collection = mongoclient[mongodb_db_name][mongodb_collection_name]
+        data = {}
+        parser.add_argument('keyword', action='append')
+        args = parser.parse_args()
+        global track_keywords
+        if args['keyword'] is not None:
+            track_keywords = args['keyword']
+        sentiments = ['positive', 'negative', 'neutral']
+        data["labels"] = track_keywords
+        data["datasets"] = [
+            {
+                'label': sentiments[0],
+                'data': [],
+                'backgroundColor': '#D6E9C6',
+            },
+            {
+                'label': sentiments[1],
+                'data': [],
+                'backgroundColor': '#FAEBCC',
+            },
+            {
+                'label': sentiments[2],
+                'data': [],
+                'backgroundColor': '#EBCCD1',
+            }
+        ]
+        # print(track_keywords)
+        # print(data)
+        for keyCount, keyword in enumerate(track_keywords):
+            for sentiCount, sentiment in enumerate(sentiments):
+                # print(sentiment)
+                count = collection.find(
+                    {"polarity": sentiment, "keyword": keyword}).count()
+                # print(count)
+                data["datasets"][sentiCount]["data"].append(count)
+                # print(data) ## Here is the problem
+        #print(data)
+
+
+        return data
+
+
+api.add_resource(health, '/health')
 api.add_resource(send_data_to_kafka, '/tweets')
 api.add_resource(get_data_from_kafka, '/show')
 api.add_resource(twitter_to_kafka, '/twitter_to_kafka')
 api.add_resource(test_mongodb, '/test_mongo')
 api.add_resource(kafka_to_mongodb, '/kafka_to_mongodb')
-
+api.add_resource(get_db_data1, '/get_db_data1')
+api.add_resource(get_db_data2, '/get_db_data2')
 
 producer = KafkaProducer(
     bootstrap_servers=bootstrap_servers,
