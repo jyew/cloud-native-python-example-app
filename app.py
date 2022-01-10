@@ -182,12 +182,15 @@ class kafka_to_mongodb(Resource):
         countDocsWritten = 0
         # collection = mongoclient[mongodb_db_name][mongodb_collection_name]
         
+        # # obtain the last offset value
+        # PARTITIONS = []
+        # for partition in consumer.partitions_for_topic(kafka_topic):
+        #     PARTITIONS.append(TopicPartition(kafka_topic, partition))
+
+        tp = TopicPartition(kafka_topic,0)
         # obtain the last offset value
-        PARTITIONS = []
-        for partition in consumer.partitions_for_topic(kafka_topic):
-            PARTITIONS.append(TopicPartition(kafka_topic, partition))
-            
-        lastOffset = consumer.end_offsets(PARTITIONS)
+        lastOffset = consumer.end_offsets([tp])[tp]
+        print("lastoffset", lastOffset)
 
         for message in consumer:
             msg = message.value
