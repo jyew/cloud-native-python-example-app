@@ -235,8 +235,8 @@ class kafka_to_mongodb(Resource):
                     countDocsWritten = countDocsWritten + 1
                     print('\nWritten %d documents to MongoDb' % (countDocsWritten))
                     print(db_item)            
-            if message.offset == lastOffset - 1:
-                break
+            # if message.offset == lastOffset - 1:
+            #     break
         data = {'message': 'saved {} messages'.format(countDocsWritten), 'code': 'SUCCESS'}
         return jsonify(data)
 
