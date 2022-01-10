@@ -224,6 +224,8 @@ class get_db_data1(Resource):
         # print(track_keywords)
         # print(data)
         for keyword in track_keywords:
+            print(collection.find(
+                {"tweet": {"$regex": keyword, "$options": "gim"}}))
             count = collection.find(
                 {"tweet": {"$regex": keyword, "$options": "gim"}}).count_documents()
             data["values"].append(count)
