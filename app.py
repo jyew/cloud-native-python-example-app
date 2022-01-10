@@ -172,6 +172,34 @@ class test_mongodb(Resource):
         collection.delete_many({"author": "Jordan"})
         return 200
 
+class test_mongodb2(Resource):
+    def get(self):
+        collection = mongoclient[mongodb_db_name][mongodb_collection_name]
+        # message = {"author": "Jordan",
+        #             "text": "My first blog post!",
+        #             "tags": ["mongodb", "python", "pymongo"],
+        #             "date": datetime.datetime.utcnow()}
+        # # write data
+        # message_id = collection.insert_one(message).inserted_id
+        # print(message_id)
+        # print(mongoclient[mongodb_db_name].list_collection_names())
+        
+        # # read data
+        # for post in collection.find():
+        #     pprint.pprint(post)
+
+        # # erase data
+        # collection.delete_many({"author": "Jordan"})
+
+        parser.add_argument('keyword', action='append', type=str)
+        parser.add_argument('action', type=str)
+        args = parser.parse_args()
+
+        query = {"tweet": {"$regex": args['keyword'], "$options": "gim"}}
+        for doc in collection.find(query):
+            print(doc)
+        return 200
+
 # continue dev here
 class kafka_to_mongodb(Resource):
     def get(self):
@@ -230,7 +258,6 @@ class get_db_data1(Resource):
             data["values"].append(count)
 
             # json serializing mongo documents
-            
             data["messages"] = [dumps(doc, default=json_util.default) for doc in collection.find(query)]
             #json_docs = [dumps(doc, default=json_util.default) for doc in collection.find(query)]
             #data["messages"] = [loads(j_doc, object_hook=json_util.object_hook) for j_doc in json_docs]
@@ -285,6 +312,7 @@ api.add_resource(send_data_to_kafka, '/tweets')
 api.add_resource(get_data_from_kafka, '/show')
 api.add_resource(twitter_to_kafka, '/twitter_to_kafka')
 api.add_resource(test_mongodb, '/test_mongo')
+api.add_resource(test_mongodb2, '/test_mongo2')
 api.add_resource(kafka_to_mongodb, '/kafka_to_mongodb')
 api.add_resource(get_db_data1, '/get_db_data1')
 api.add_resource(get_db_data2, '/get_db_data2')
