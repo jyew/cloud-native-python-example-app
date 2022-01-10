@@ -10,6 +10,7 @@ from kafka import TopicPartition
 from json import dumps
 from json import loads
 from pymongo import MongoClient
+from bson.objectid import ObjectId
 import os
 import re
 import random
@@ -180,12 +181,7 @@ class kafka_to_mongodb(Resource):
         if args['keyword'] is not None:
             track_keywords = args['keyword']
         countDocsWritten = 0
-        # collection = mongoclient[mongodb_db_name][mongodb_collection_name]
-        
-        # # obtain the last offset value
-        # PARTITIONS = []
-        # for partition in consumer.partitions_for_topic(kafka_topic):
-        #     PARTITIONS.append(TopicPartition(kafka_topic, partition))
+        collection = mongoclient[mongodb_db_name][mongodb_collection_name]
 
         tp = TopicPartition(kafka_topic,0)
         # obtain the last offset value
@@ -197,22 +193,17 @@ class kafka_to_mongodb(Resource):
             tidy_tweet = msg['tweet'].strip().encode('ascii', 'ignore')
             print(tidy_tweet)
             countDocsWritten = countDocsWritten + 1
-            # #print(message)
-            # if len(tidy_tweet) <= 5:
-            #     break
-            # for keyword in track_keywords:
-            #     if len(re.findall(keyword,tidy_tweet)) > 0:
-            #         db_item['_id'] = ObjectId()
-            #         db_item['keyword'] = keyword
-            #         db_item['tweet'] = tidy_tweet
-            #         #tidy_tweet.update({'keyword': keyword})
-            #         collection.insert_one(db_item)
-            #         countDocsWritten = countDocsWritten + 1
-            #         print('\nWritten %d documents to MongoDb' % (countDocsWritten))
-            #         print(db_item)            
-            # # if tidy_tweet.find(count):
-            # #response = client.Sentiment({'text': tidy_tweet})
-            # #collection.insert_one(message)
+            if len(tidy_tweet) <= 5:
+                break
+            for keyword in track_keywords:
+                if len(re.findall(keyword,tidy_tweet)) > 0:
+                    db_item['_id'] = ObjectId()
+                    db_item['keyword'] = keyword
+                    db_item['tweet'] = tidy_tweet
+                    collection.insert_one(db_item)
+                    countDocsWritten = countDocsWritten + 1
+                    print('\nWritten %d documents to MongoDb' % (countDocsWritten))
+                    print(db_item)            
             if message.offset == lastOffset - 1:
                 break
         data = {'message': 'saved {} messages'.format(countDocsWritten), 'code': 'SUCCESS'}
