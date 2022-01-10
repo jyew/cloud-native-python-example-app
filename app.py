@@ -190,6 +190,7 @@ class kafka_to_mongodb(Resource):
         lastOffset = consumer.end_offsets(PARTITIONS)
 
         for message in consumer:
+            print(message)
             message = message.value
             tidy_tweet = message['tweet'].strip().encode('ascii', 'ignore')
             print(tidy_tweet)
