@@ -227,7 +227,7 @@ class get_db_data1(Resource):
             query = {"tweet": {"$regex": keyword, "$options": "gim"}}
             count = collection.count_documents(query)
             data["values"].append(count)
-            data["messages"].append(collection.find(query))
+            data["messages"] = [doc for doc in collection.find(query)]
         return data 
 
 class get_db_data2(Resource):
