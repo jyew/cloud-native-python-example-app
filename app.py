@@ -184,8 +184,8 @@ class kafka_to_mongodb(Resource):
         
         # obtain the last offset value
         PARTITIONS = []
-        for partition in consumer.partitions_for_topic(TOPIC):
-            PARTITIONS.append(TopicPartition(TOPIC, partition))
+        for partition in consumer.partitions_for_topic(kafka_topic):
+            PARTITIONS.append(TopicPartition(kafka_topic, partition))
             
         lastOffset = consumer.end_offsets(PARTITIONS)
 
