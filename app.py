@@ -194,10 +194,12 @@ class test_mongodb2(Resource):
         parser.add_argument('keyword', action='append', type=str)
         parser.add_argument('action', type=str)
         args = parser.parse_args()
-
-        query = {"tweet": {"$regex": args['keyword'], "$options": "gim"}}
-        for doc in collection.find(query):
-            print(doc)
+        if args['keyword'] is not None:
+            track_keywords = args['keyword']
+        for keyword in track_keywords:
+            query = {"tweet": {"$regex": keyword, "$options": "gim"}}
+            for doc in collection.find(query):
+                print(doc)
         return 200
 
 # continue dev here
