@@ -208,7 +208,7 @@ class test_mongodb3(Resource):
         collection = mongoclient[mongodb_db_name][mongodb_collection_name]
 
         # erase data
-        collection.delete_many()
+        collection.delete_many({})
         return 200
 
 # continue dev here
