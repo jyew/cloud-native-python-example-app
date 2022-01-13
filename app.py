@@ -290,7 +290,7 @@ class get_db_data3(Resource):
         data["labels"] = track_keywords
         data["values"] = []
         
-        filtered_collection = collection.find({'keyword':{'$in': track_keywords}})
+        filtered_collection = collection.find({'keyword':{'$in': track_keywords}}).sort({"created_at": -1}) 
         data["messages"] = [dumps(doc, default=json_util.default) for doc in filtered_collection]
         data["values"] = [len([m for m in data["messages"] if k in m]) for k in track_keywords]
         return data 
