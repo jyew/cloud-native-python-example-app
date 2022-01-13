@@ -267,13 +267,33 @@ class get_db_data1(Resource):
             count = collection.count_documents(query)
             data["values"].append(count)
 
-            # db.products.find().sort({"created_at": 1}) 
+            # db.products.find().sort({"created_at": -1}) 
 
             # json serializing mongo documents
-            for doc in collection.find(query):
+            for doc in collection.find(query).sort({"created_at": -1}) :
                 data["messages"].append(dumps(doc, default=json_util.default))
             # data["messages"] = [dumps(doc, default=json_util.default) for doc in collection.find(query)]
         return data 
+
+
+# testing another way of querying documents
+class get_db_data3(Resource):
+    def get(self):
+        collection = mongoclient[mongodb_db_name][mongodb_collection_name]
+        data = {}
+        parser.add_argument('keyword', action='append')
+        args = parser.parse_args()
+        global track_keywords
+        if args['keyword'] is not None:
+            track_keywords = args['keyword']
+        data["labels"] = track_keywords
+        data["values"] = []
+        
+        filtered_collection = collection.find({'tweet':{'$in': track_keywords}})
+        data["messages"] = [dumps(doc, default=json_util.default) for doc in filtered_collection]
+        ## data["values"]
+        return data 
+
 
 class get_db_data2(Resource):
     # generate random results for rendering first
@@ -347,6 +367,7 @@ api.add_resource(test_mongodb3, '/test_mongo3')
 api.add_resource(kafka_to_mongodb, '/kafka_to_mongodb')
 api.add_resource(get_db_data1, '/get_db_data1')
 api.add_resource(get_db_data2, '/get_db_data2')
+api.add_resource(get_db_data3, '/get_db_data3')
 api.add_resource(apply_sentiment, '/apply_sentiment')
 
 producer = KafkaProducer(
