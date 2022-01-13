@@ -289,7 +289,7 @@ class get_db_data3(Resource):
         data["labels"] = track_keywords
         data["values"] = []
         
-        filtered_collection = collection.find({'tweet':{'$in': track_keywords}})
+        filtered_collection = collection.find({'keyword':{'$in': track_keywords}})
         data["messages"] = [dumps(doc, default=json_util.default) for doc in filtered_collection]
         ## data["values"]
         return data 
