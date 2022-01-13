@@ -202,6 +202,15 @@ class test_mongodb2(Resource):
                 print(doc)
         return 200
 
+
+class test_mongodb3(Resource):
+    def get(self):
+        collection = mongoclient[mongodb_db_name][mongodb_collection_name]
+
+        # erase data
+        collection.delete_many()
+        return 200
+
 # continue dev here
 class kafka_to_mongodb(Resource):
     def get(self):
@@ -231,6 +240,7 @@ class kafka_to_mongodb(Resource):
                     db_item['_id'] = ObjectId()
                     db_item['keyword'] = keyword
                     db_item['tweet'] = tidy_tweet
+                    db_item['created_at'] = msg['created_at']
                     collection.insert_one(db_item)
                     countDocsWritten = countDocsWritten + 1
                     print('\nWritten %d documents to MongoDb' % (countDocsWritten))
@@ -246,18 +256,18 @@ class get_db_data1(Resource):
         data = {}
         parser.add_argument('keyword', action='append')
         args = parser.parse_args()
-        #print('args', args['keyword'])
         global track_keywords
         if args['keyword'] is not None:
             track_keywords = args['keyword']
         data["labels"] = track_keywords
         data["values"] = []
         data["messages"] = []
-        # print(track_keywords)
         for keyword in track_keywords:
             query = {"tweet": {"$regex": keyword, "$options": "gim"}}
             count = collection.count_documents(query)
             data["values"].append(count)
+
+            # db.products.find().sort({"created_at": 1}) 
 
             # json serializing mongo documents
             for doc in collection.find(query):
@@ -333,6 +343,7 @@ api.add_resource(get_data_from_kafka, '/show')
 api.add_resource(twitter_to_kafka, '/twitter_to_kafka')
 api.add_resource(test_mongodb, '/test_mongo')
 api.add_resource(test_mongodb2, '/test_mongo2')
+api.add_resource(test_mongodb3, '/test_mongo3')
 api.add_resource(kafka_to_mongodb, '/kafka_to_mongodb')
 api.add_resource(get_db_data1, '/get_db_data1')
 api.add_resource(get_db_data2, '/get_db_data2')
