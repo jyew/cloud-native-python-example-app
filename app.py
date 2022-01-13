@@ -240,7 +240,8 @@ class kafka_to_mongodb(Resource):
                     db_item['_id'] = ObjectId()
                     db_item['keyword'] = keyword
                     db_item['tweet'] = tidy_tweet
-                    db_item['created_at'] = datetime.datetime.strptime(msg['created_at'], '%Y-%m-%d')
+                    db_item['created_at'] = datetime.datetime.strptime(msg['created_at'], 
+                                                                        '%Y-%m-%d %H:%M:%S')
                     collection.insert_one(db_item)
                     countDocsWritten = countDocsWritten + 1
                     print('\nWritten %d documents to MongoDb' % (countDocsWritten))
