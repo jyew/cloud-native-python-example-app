@@ -268,9 +268,9 @@ class get_db_data1(Resource):
             data["values"].append(count)
 
             # db.products.find().sort({"created_at": -1}) 
-
+            # .sort({"created_at": -1})
             # json serializing mongo documents
-            for doc in collection.find(query).sort({"created_at": -1}) :
+            for doc in collection.find(query) :
                 data["messages"].append(dumps(doc, default=json_util.default))
             # data["messages"] = [dumps(doc, default=json_util.default) for doc in collection.find(query)]
         return data 
