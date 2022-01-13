@@ -251,7 +251,7 @@ class kafka_to_mongodb(Resource):
         data = {'message': 'saved {} messages'.format(countDocsWritten), 'code': 'SUCCESS'}
         return jsonify(data)
 
-class get_db_data1(Resource):
+class get_db_data3(Resource):
     def get(self):
         collection = mongoclient[mongodb_db_name][mongodb_collection_name]
         data = {}
@@ -278,7 +278,7 @@ class get_db_data1(Resource):
 
 
 # testing another way of querying documents FASTER
-class get_db_data3(Resource):
+class get_db_data1(Resource):
     def get(self):
         collection = mongoclient[mongodb_db_name][mongodb_collection_name]
         data = {}
