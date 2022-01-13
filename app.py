@@ -276,7 +276,7 @@ class get_db_data1(Resource):
         return data 
 
 
-# testing another way of querying documents
+# testing another way of querying documents FASTER
 class get_db_data3(Resource):
     def get(self):
         collection = mongoclient[mongodb_db_name][mongodb_collection_name]
@@ -291,7 +291,7 @@ class get_db_data3(Resource):
         
         filtered_collection = collection.find({'keyword':{'$in': track_keywords}})
         data["messages"] = [dumps(doc, default=json_util.default) for doc in filtered_collection]
-        ## data["values"]
+        data["values"] = [len([m for m in data["messages"] if k in m]) for k in track_keywords]
         return data 
 
 
