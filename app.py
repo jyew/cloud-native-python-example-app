@@ -260,9 +260,9 @@ class get_db_data1(Resource):
             data["values"].append(count)
 
             # json serializing mongo documents
-            data["messages"] = [dumps(doc, default=json_util.default) for doc in collection.find(query)]
-            #json_docs = [dumps(doc, default=json_util.default) for doc in collection.find(query)]
-            #data["messages"] = [loads(j_doc, object_hook=json_util.object_hook) for j_doc in json_docs]
+            for doc in collection.find(query):
+                data["messages"].append(dumps(doc, default=json_util.default))
+            # data["messages"] = [dumps(doc, default=json_util.default) for doc in collection.find(query)]
         return data 
 
 class get_db_data2(Resource):
