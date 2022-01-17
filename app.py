@@ -12,10 +12,10 @@ from json import loads
 from pymongo import MongoClient, DESCENDING
 from bson.objectid import ObjectId
 from bson import json_util
-from nemo.utils import logging
-from nemo.collections.nlp.parts.utils_funcs import tensor2list
-from nemo.collections.nlp.models.text_classification import TextClassificationModel
-from nemo.collections.nlp.data.text_classification import TextClassificationDataset
+# from nemo.utils import logging
+# from nemo.collections.nlp.parts.utils_funcs import tensor2list
+# from nemo.collections.nlp.models.text_classification import TextClassificationModel
+# from nemo.collections.nlp.data.text_classification import TextClassificationDataset
 import os
 import re
 import random
@@ -25,8 +25,8 @@ import tweepy
 import time
 import datetime
 import pprint
-import numpy as np
-import torch
+# import numpy as np
+# import torch
 
 
 # log.basicConfig(level=log.DEBUG)
