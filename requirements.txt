@@ -23,6 +23,6 @@ websocket-client
 kafka-python==2.0.2
 tweepy
 pymongo
-Nemo==1.4.0
+# Nemo==1.4.0
 onnxruntime
 torch
