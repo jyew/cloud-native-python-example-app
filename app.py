@@ -361,40 +361,19 @@ sentiment_model = flair.models.TextClassifier.load('en-sentiment')
 
 class apply_sentiment(Resource):
     def get(self):
-
-        # collection = mongoclient[mongodb_db_name][mongodb_collection_name]
-        # for count in range(1,collection.count()):
-        #     record = collection.find().limit(-1).skip(random.randint(1,collection.count())).next()  
-
-        #     # use flair
-
-
-        #     # sentiment_analysis_result = client.Sentiment({'text': record['tweet']})
-        #     # collection.update_one({'_id':record['_id']},
-        #     #                         { "$set" : {'polarity': sentiment_analysis_result['polarity'] } })
-        #     print(record)
-
-
-
         collection = mongoclient[mongodb_db_name][mongodb_collection_name]
         for record in collection.find({}):
             print(record)
-            # record_json = loads(record)
-            # print(record_json)
             sentence = flair.data.Sentence(record['tweet'])
             sentiment_model.predict(sentence)
-            print((sentence.labels[0].score, sentence.labels[0].value))
-
-        # for _tweet in tweets['text']:
-        #     sentence = flair.data.Sentence(tweet)
-        #     sentiment_model.predict(sentence)
-        #     probs.append(sentence.labels[0].score)
-        #     sentiments.append(sentence.labels[0].value)
-
-        # tweets['probability'] = probs
-        # tweets['sentiment'] = sentiments
-        
-        pass
+            collection.update_one({'_id':record['_id']},
+                                { "$set" : 
+                                    {
+                                        'sentiment': sentence.labels[0].value, 
+                                        'confidence': sentence.labels[0].score
+                                    } 
+                                })
+        return 200
 
 
 
