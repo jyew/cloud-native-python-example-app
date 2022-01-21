@@ -362,19 +362,21 @@ sentiment_model = flair.models.TextClassifier.load('en-sentiment')
 class apply_sentiment(Resource):
     def get(self):
 
+        # collection = mongoclient[mongodb_db_name][mongodb_collection_name]
+        # for count in range(1,collection.count()):
+        #     record = collection.find().limit(-1).skip(random.randint(1,collection.count())).next()  
+
+        #     # use flair
+
+
+        #     # sentiment_analysis_result = client.Sentiment({'text': record['tweet']})
+        #     # collection.update_one({'_id':record['_id']},
+        #     #                         { "$set" : {'polarity': sentiment_analysis_result['polarity'] } })
+        #     print(record)
+
         collection = mongoclient[mongodb_db_name][mongodb_collection_name]
-        for count in range(1,collection.count()):
-            record = collection.find().limit(-1).skip(random.randint(1,collection.count())).next()  
-
-            # use flair
-
-
-            # sentiment_analysis_result = client.Sentiment({'text': record['tweet']})
-            # collection.update_one({'_id':record['_id']},
-            #                         { "$set" : {'polarity': sentiment_analysis_result['polarity'] } })
+        for record in collection.find({}):
             print(record)
-
-
 
         probs = []
         sentiments = []
