@@ -378,8 +378,9 @@ class apply_sentiment(Resource):
 
         collection = mongoclient[mongodb_db_name][mongodb_collection_name]
         for record in collection.find({}):
-            print(record)
-            sentence = flair.data.Sentence(record.tweet)
+            record_json = dumps(record, default=json_util.default)
+            print(record_json)
+            sentence = flair.data.Sentence(record_json.tweet)
             sentiment_model.predict(sentence)
             print((sentence.labels[0].score, sentence.labels[0].value))
 
