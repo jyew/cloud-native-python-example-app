@@ -23,6 +23,7 @@ websocket-client
 kafka-python==2.0.2
 tweepy
 pymongo
+flair
 # Nemo==1.4.0
 # onnxruntime
 # torch

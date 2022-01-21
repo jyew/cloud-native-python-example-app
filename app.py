@@ -25,6 +25,7 @@ import tweepy
 import time
 import datetime
 import pprint
+import flair
 # import numpy as np
 # import torch
 
@@ -354,16 +355,41 @@ class get_db_data2(Resource):
             data["datasets"][2]["data"].append(count_neutral)
         return data
 
+
+# flair sentiment model
+sentiment_model = flair.models.TextClassifier.load('en-sentiment')
+
 class apply_sentiment(Resource):
     def get(self):
+
+        collection = mongoclient[mongodb_db_name][mongodb_collection_name]
+        for count in range(1,collection.count()):
+            record = collection.find().limit(-1).skip(random.randint(1,collection.count())).next()  
+
+            # use flair
+
+
+            # sentiment_analysis_result = client.Sentiment({'text': record['tweet']})
+            # collection.update_one({'_id':record['_id']},
+            #                         { "$set" : {'polarity': sentiment_analysis_result['polarity'] } })
+            print(record)
+
+
+
+        probs = []
+        sentiments = []
+
+        # for _tweet in tweets['text']:
+        #     sentence = flair.data.Sentence(tweet)
+        #     sentiment_model.predict(sentence)
+        #     probs.append(sentence.labels[0].score)
+        #     sentiments.append(sentence.labels[0].value)
+
+        # tweets['probability'] = probs
+        # tweets['sentiment'] = sentiments
+        
         pass
-        # collection = mongoclient[mongodb_db_name][mongodb_collection_name]
-        # for count in range(1,collection.count()):
-        #     record = collection.find().limit(-1).skip(random.randint(1,collection.count())).next()   
-        #     sentiment_analysis_result = client.Sentiment({'text': record['tweet']})
-        #     collection.update_one({'_id':record['_id']},
-        #                             { "$set" : {'polarity': sentiment_analysis_result['polarity'] } })
-        #     print(record)
+
 
 
 api.add_resource(health, '/health')
