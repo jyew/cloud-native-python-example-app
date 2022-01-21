@@ -374,12 +374,14 @@ class apply_sentiment(Resource):
         #     #                         { "$set" : {'polarity': sentiment_analysis_result['polarity'] } })
         #     print(record)
 
+
+
         collection = mongoclient[mongodb_db_name][mongodb_collection_name]
         for record in collection.find({}):
             print(record)
-
-        probs = []
-        sentiments = []
+            sentence = flair.data.Sentence(record.tweet)
+            sentiment_model.predict(sentence)
+            print((sentence.labels[0].score, sentence.labels[0].value))
 
         # for _tweet in tweets['text']:
         #     sentence = flair.data.Sentence(tweet)
