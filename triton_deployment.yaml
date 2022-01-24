@@ -5,7 +5,7 @@ metadata:
   labels:
     app: triton-3gpu
   name: triton-3gpu
-  namespace: triton
+  namespace: amq-streams
 spec:
   ports:
   - name: grpc-trtis-serving
@@ -27,7 +27,7 @@ metadata:
   labels:
     app: triton-1gpu
   name: triton-1gpu
-  namespace: triton
+  namespace: amq-streams
 spec:
   ports:
   - name: grpc-trtis-serving
@@ -49,7 +49,7 @@ metadata:
   labels:
     app: triton-3gpu
   name: triton-3gpu
-  namespace: triton
+  namespace: amq-streams
 spec:
   replicas: 1
   selector:
@@ -94,7 +94,7 @@ metadata:
   labels:
     app: triton-1gpu
   name: triton-1gpu
-  namespace: triton
+  namespace: amq-streams
 spec:
   replicas: 3
   selector:
